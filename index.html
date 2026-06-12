@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Analyzer Pro - Advanced Text & File Analytics</title>
+    <meta name="description" content="A premium, state-of-the-art text and file analyzer. Analyze word counts, character frequencies, reading times, readability, and sentiment in real-time.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-theme">
+    <!-- Animated background globs -->
+    <div class="background-decorations">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+    
+    <header class="app-header">
+        <div class="logo-area">
+            <div class="logo-icon"><i class="fa-solid fa-chart-simple"></i></div>
+            <h1>Text Analyzer <span class="gradient-text">Pro</span></h1>
+        </div>
+        <div class="header-controls">
+            <button id="themeToggle" class="icon-btn" aria-label="Toggle theme">
+                <i class="fa-solid fa-sun icon-sun"></i>
+                <i class="fa-solid fa-moon icon-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="app-container">
+        <!-- Input Panel -->
+        <section class="input-section card">
+            <div class="tab-headers">
+                <button class="tab-btn active" id="tabUpload"><i class="fa-solid fa-file-arrow-up"></i> Upload File</button>
+                <button class="tab-btn" id="tabInput"><i class="fa-solid fa-keyboard"></i> Paste Text</button>
+            </div>
+            
+            <div class="tab-content">
+                <!-- Upload Tab Pane -->
+                <div class="tab-pane active" id="paneUpload">
+                    <div class="dropzone" id="dropZone">
+                        <input type="file" id="fileInput" accept=".txt,.csv,.md,.html,.json,.js,.css,.c,.h" class="hidden-input">
+                        <div class="dropzone-content">
+                            <div class="upload-icon-pulse">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                            </div>
+                            <h3>Drag & drop your file here</h3>
+                            <p>or <span class="browse-link">browse files</span> from your device</p>
+                            <span class="file-limits">Supports TXT, MD, CSV, JSON, HTML, C, H up to 10MB</span>
+                        </div>
+                    </div>
+                    
+                    <div class="file-details-bar hidden" id="fileDetailsBar">
+                        <div class="file-info">
+                            <i class="fa-solid fa-file-lines file-icon"></i>
+                            <div>
+                                <span class="file-name" id="selectedFileName">document.txt</span>
+                                <span class="file-size" id="selectedFileSize">0 KB</span>
+                            </div>
+                        </div>
+                        <button id="clearFileBtn" class="clear-btn" aria-label="Clear file"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>
+                
+                <!-- Direct Text Input Pane -->
+                <div class="tab-pane" id="paneInput">
+                    <div class="text-editor-container">
+                        <textarea id="textEditor" placeholder="Type or paste your content here to begin instant real-time analysis..."></textarea>
+                        <div class="editor-actions">
+                            <span class="char-limit-indicator" id="editorCharCount">0 characters</span>
+                            <div class="editor-btn-group">
+                                <button id="copyTextBtn" class="action-btn text-btn" title="Copy Text"><i class="fa-solid fa-copy"></i> Copy</button>
+                                <button id="clearTextBtn" class="action-btn text-btn danger" title="Clear Text"><i class="fa-solid fa-trash-can"></i> Clear</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading View -->
+        <div class="analyzer-loading hidden" id="loadingState">
+            <div class="spinner"></div>
+            <p>Analyzing text content...</p>
+        </div>
+
+        <!-- Empty State View -->
+        <section class="empty-state" id="emptyState">
+            <div class="empty-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+            <h2>Awaiting Input</h2>
+            <p>Upload a text file or paste content above to view comprehensive real-time analysis.</p>
+        </section>
+
+        <!-- Analytics Output View -->
+        <div class="results-container hidden" id="resultsContainer">
+            
+            <!-- Dashboard KPIs -->
+            <section class="dashboard-grid">
+                <div class="kpi-card" data-stat="words">
+                    <div class="kpi-icon"><i class="fa-solid fa-quote-left"></i></div>
+                    <div class="kpi-content">
+                        <h3>Total Words</h3>
+                        <div class="kpi-value" id="statWords">0</div>
+                    </div>
+                </div>
+                
+                <div class="kpi-card" data-stat="chars">
+                    <div class="kpi-icon"><i class="fa-solid fa-font"></i></div>
+                    <div class="kpi-content">
+                        <h3>Total Characters</h3>
+                        <div class="kpi-value" id="statChars">0</div>
+                        <div class="kpi-subtext" id="statCharsNoSpaces">0 without spaces</div>
+                    </div>
+                </div>
+                
+                <div class="kpi-card" data-stat="lines">
+                    <div class="kpi-icon"><i class="fa-solid fa-list-ol"></i></div>
+                    <div class="kpi-content">
+                        <h3>Total Lines</h3>
+                        <div class="kpi-value" id="statLines">0</div>
+                    </div>
+                </div>
+
+                <div class="kpi-card" data-stat="paragraphs">
+                    <div class="kpi-icon"><i class="fa-solid fa-paragraph"></i></div>
+                    <div class="kpi-content">
+                        <h3>Paragraphs</h3>
+                        <div class="kpi-value" id="statParagraphs">0</div>
+                    </div>
+                </div>
+
+                <div class="kpi-card" data-stat="reading-time">
+                    <div class="kpi-icon"><i class="fa-solid fa-clock"></i></div>
+                    <div class="kpi-content">
+                        <h3>Reading Time</h3>
+                        <div class="kpi-value" id="statReadingTime">~0m 0s</div>
+                        <div class="kpi-subtext">Based on 200 WPM</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Detailed Panels Grid -->
+            <div class="details-grid">
+                
+                <!-- Word Frequencies Card -->
+                <section class="details-card card word-frequency-card">
+                    <div class="card-header">
+                        <h2>Word Frequency</h2>
+                        <div class="card-header-actions">
+                            <div class="search-box">
+                                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                                <input type="text" id="wordSearch" placeholder="Search words...">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-controls">
+                        <label for="wordLengthFilter">Min word length: <span id="wordLengthVal">1</span></label>
+                        <input type="range" id="wordLengthFilter" min="1" max="15" value="1" class="slider">
+                    </div>
+                    <div class="table-container scrollable">
+                        <table class="data-table" id="wordTable">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Word</th>
+                                    <th>Frequency</th>
+                                    <th>Density</th>
+                                </tr>
+                            </thead>
+                            <tbody id="wordTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                        <div class="no-results hidden" id="noWordsMessage">No matching words found</div>
+                    </div>
+                </section>
+
+                <!-- Character Frequencies Card -->
+                <section class="details-card card char-frequency-card">
+                    <div class="card-header">
+                        <h2>Character Frequency</h2>
+                        <div class="card-header-actions">
+                            <select id="charSortOrder" class="dropdown">
+                                <option value="desc">Sort by Frequency (High-Low)</option>
+                                <option value="asc">Sort by Frequency (Low-High)</option>
+                                <option value="alpha">Sort Alphabetically</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <div id="charChartWrapper" class="chart-wrapper"></div>
+                    </div>
+                </section>
+                
+                <!-- Insights, Sentiments, and Metrics Card -->
+                <section class="details-card card insights-card">
+                    <div class="card-header">
+                        <h2>Readability & Insights</h2>
+                    </div>
+                    <div class="insights-content">
+                        
+                        <div class="insight-row">
+                            <div class="insight-info">
+                                <h3>Readability Score (Flesch Ease)</h3>
+                                <p class="insight-desc" id="readabilityDesc">Enter text to calculate</p>
+                            </div>
+                            <div class="insight-value-large" id="readabilityScore">0.0</div>
+                        </div>
+                        
+                        <div class="insight-metrics">
+                            <div class="metric-item">
+                                <span class="metric-label">Avg. Word Length</span>
+                                <span class="metric-value" id="avgWordLength">0.0 chars</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">Avg. Sentence Length</span>
+                                <span class="metric-value" id="avgSentenceLength">0.0 words</span>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="sentiment-section">
+                            <h3>Sentiment Indicator</h3>
+                            <div class="sentiment-gauge-wrapper">
+                                <div class="sentiment-gauge">
+                                    <div class="sentiment-needle" id="sentimentNeedle"></div>
+                                </div>
+                                <div class="sentiment-labels">
+                                    <span class="label-neg">Negative</span>
+                                    <span class="label-neu active" id="sentimentText">Neutral</span>
+                                    <span class="label-pos">Positive</span>
+                                </div>
+                            </div>
+                            <div class="sentiment-stats">
+                                <span class="sentiment-pill negative-pill"><i class="fa-solid fa-thumbs-down"></i> <span id="negCount">0</span> negative words</span>
+                                <span class="sentiment-pill positive-pill"><i class="fa-solid fa-thumbs-up"></i> <span id="posCount">0</span> positive words</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Export & Save Operations Card -->
+                <section class="details-card card export-card">
+                    <div class="card-header">
+                        <h2>Export & Actions</h2>
+                    </div>
+                    <div class="export-options">
+                        <p>Download your complete analysis report in standard formats. The calculations are completed locally.</p>
+                        <div class="btn-grid">
+                            <button class="action-btn primary-btn" id="exportTxt"><i class="fa-solid fa-file-lines"></i> Export Plain Text</button>
+                            <button class="action-btn primary-btn" id="exportJson"><i class="fa-solid fa-code"></i> Export JSON Data</button>
+                            <button class="action-btn primary-btn" id="exportCsv"><i class="fa-solid fa-table"></i> Export CSV Table</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="app-footer">
+        <p>&copy; 2026 Text Analyzer Pro. Built with performance and privacy in mind.</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

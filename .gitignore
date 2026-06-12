@@ -1,0 +1,23 @@
+# Compiled binaries and object files
+*.exe
+*.o
+*.out
+analyzer
+a.exe
+
+# Editor and IDE configurations
+.vscode/
+.vs/
+.idea/
+*.suo
+*.user
+*.userossc
+*.sln
+*.vcproj
+*.vcxproj
+*.filters
+
+# Local logs or system files
+*.log
+.DS_Store
+Thumbs.db
